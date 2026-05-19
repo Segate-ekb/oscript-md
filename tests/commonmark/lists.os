@@ -121,7 +121,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Loose-list detection in deeply nested lists when blank line follows nested content.")
 Процедура Пример_0307() Экспорт
     Исходник = "- foo
         |  - bar
@@ -246,7 +245,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Lazy continuation of list item paragraph when continuation line looks like a list marker at higher indent.")
 Процедура Пример_0312() Экспорт
     Исходник = "- a
         | - b
@@ -377,7 +375,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Loose-vs-tight detection when blank lines are *inside* a fenced code block — they should not make the surrounding list loose.")
 Процедура Пример_0318() Экспорт
     Исходник = "- a
         |- ```
@@ -402,7 +399,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Loose-list paragraph-extension after blank inside nested list item.")
 Процедура Пример_0319() Экспорт
     Исходник = "- a
         |  - b

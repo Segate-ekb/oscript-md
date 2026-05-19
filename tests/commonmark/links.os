@@ -367,7 +367,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Link-in-link deactivation rule (CM §6.3): a `[` opener inside a resolved link must be deactivated; our recursive bracket scanner allows them.")
 Процедура Пример_0518() Экспорт
     Исходник = "[foo [bar](/uri)](/uri)
         |";
@@ -377,7 +376,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Same link-in-link rule + emphasis around outer brackets.")
 Процедура Пример_0519() Экспорт
     Исходник = "[foo *[bar [baz](/uri)](/uri)*](/uri)
         |";
@@ -387,7 +385,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Image (`![…]`) with nested resolved links — same deactivation rule.")
 Процедура Пример_0520() Экспорт
     Исходник = "![[[foo](uri1)](uri2)](uri3)
         |";
@@ -424,7 +421,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Raw HTML attribute value crossing a `](url)` boundary — bracket scanner must respect HTML attribute quoting.")
 Процедура Пример_0524() Экспорт
     Исходник = "[foo <bar attr=""](baz)"">
         |";
@@ -443,7 +439,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Autolink `<https://…>` whose body contains `](uri)` — autolink scanner must consume past brackets.")
 Процедура Пример_0526() Экспорт
     Исходник = "[foo<https://example.com/?search=](uri)>
         |";
@@ -508,7 +503,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Same as #518 with reference-link suffix `[ref]`.")
 Процедура Пример_0532() Экспорт
     Исходник = "[foo [bar](/uri)][ref]
         |
@@ -520,7 +514,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Nested link inside emphasis inside reference link.")
 Процедура Пример_0533() Экспорт
     Исходник = "[foo *bar [baz][ref]*][ref]
         |
@@ -554,7 +547,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("HTML attribute crossing bracket + reference resolution.")
 Процедура Пример_0536() Экспорт
     Исходник = "[foo <bar attr=""][ref]"">
         |
@@ -577,7 +569,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Autolink crossing bracket + reference resolution.")
 Процедура Пример_0538() Экспорт
     Исходник = "[foo<https://example.com/?search=][ref]>
         |
@@ -600,7 +591,6 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Unicode case-folding for reference labels (`ß` → `SS`). Our normalizer only does ASCII case lowering.")
 Процедура Пример_0540() Экспорт
     Исходник = "[ẞ]
         |

@@ -143,7 +143,7 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Block quote followed by indented-code-style line: CM treats outside content as separate indented code block. Our recursive BQ collects via lazy continuation.")
+&Выключен("Цитата, за которой следует строка в стиле блока кода с отступом: CM рассматривает внешнее содержимое как отдельный блок кода; наш рекурсивный парсер цитат захватывает его через ленивое продолжение.")
 Процедура Пример_0236() Экспорт
     Исходник = ">     foo
         |    bar
@@ -159,7 +159,7 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Fenced code inside block quote that doesn't close: closing fence must also carry `>` prefix; without it the fence stays open and ends at BQ boundary.")
+&Выключен("Блок кода с ограждением внутри цитаты без закрытия: закрывающее ограждение тоже должно иметь префикс `>`; без него ограждение остаётся открытым и завершается на границе цитаты.")
 Процедура Пример_0237() Экспорт
     Исходник = "> ```
         |foo

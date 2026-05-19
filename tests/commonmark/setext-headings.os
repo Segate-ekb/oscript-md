@@ -202,7 +202,7 @@
 КонецПроцедуры
 
 &Тест
-&Выключен("Setext underline in block-quote lazy continuation. CM disallows setext underline from being created by a lazy continuation line.")
+&Выключен("Подчёркивание setext в ленивом продолжении цитаты. CM запрещает создание setext-заголовка строкой ленивого продолжения.")
 Процедура Пример_0093() Экспорт
     Исходник = "> foo
         |bar
