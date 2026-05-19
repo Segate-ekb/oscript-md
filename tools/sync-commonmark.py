@@ -3,12 +3,18 @@
 OneUnit-сьюты по секциям: tests/commonmark/<section-slug>.os.
 
 Использование:
-    python tools/sync-commonmark.py [version] [--force] [--skip-list PATH]
+    python tools/sync-commonmark.py [version] [--force]
 
 Пример:
     python tools/sync-commonmark.py 0.31.2
 
 Зависимости: только стандартная библиотека Python 3.10+.
+
+Skip-list (тесты, помечаемые как &Выключен в сгенерированных сьютах) встроен
+ниже в SKIP_LIST. Это намеренно: список пропусков — часть инвариантов
+реализации и должен версионироваться вместе с генератором. Описание каждой
+причины и сводка известных ограничений — в README, раздел «Известные
+ограничения CommonMark».
 """
 
 from __future__ import annotations
@@ -24,8 +30,25 @@ from typing import Optional
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 COMMONMARK_DIR = PROJECT_ROOT / "tests" / "commonmark"
 CACHE_DIR = COMMONMARK_DIR / ".cache"
-DEFAULT_SKIP_LIST = PROJECT_ROOT / "tools" / "commonmark-skip.json"
 DEFAULT_VERSION = "0.31.2"
+
+# Карта тестов CommonMark, которые помечаются как xfail (&Выключен).
+# Структура: {версия_spec: {"sections": {имя: причина}, "examples": {номер: причина}}}.
+# Причина выводится как сообщение в &Выключен("…"). Сгруппированное описание
+# см. в README → «Известные ограничения CommonMark».
+SKIP_LIST: dict[str, dict] = {
+    "0.31.2": {
+        "sections": {},
+        "examples": {
+            5:   "Табуляция в элементах списка — расширение таба на границе контейнера (CM §2.2). Требует корректной обработки префикса строки контейнера.",
+            6:   "Табуляция в цитатах — расширение таба через границу маркера `>`.",
+            7:   "Табуляция в элементах списка — расчёт отступа содержимого при двойном табе.",
+            93:  "Подчёркивание setext в ленивом продолжении цитаты. CM запрещает создание setext-заголовка строкой ленивого продолжения.",
+            236: "Цитата, за которой следует строка в стиле блока кода с отступом: CM рассматривает внешнее содержимое как отдельный блок кода; наш рекурсивный парсер цитат захватывает его через ленивое продолжение.",
+            237: "Блок кода с ограждением внутри цитаты без закрытия: закрывающее ограждение тоже должно иметь префикс `>`; без него ограждение остаётся открытым и завершается на границе цитаты.",
+        },
+    },
+}
 
 
 # --------------------------------------------------------------------------- #
@@ -108,13 +131,10 @@ def parse_spec(spec_text: str) -> list[dict]:
 # Skip-list
 # --------------------------------------------------------------------------- #
 
-def load_skip_list(version: str, path: Path) -> dict:
-    if not path.exists():
-        return {"sections": {}, "examples": {}}
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    v = raw.get(version, {})
+def load_skip_list(version: str) -> dict:
+    v = SKIP_LIST.get(version, {})
     return {
-        "sections": v.get("sections", {}),
+        "sections": dict(v.get("sections", {})),
         "examples": {int(k): val for k, val in v.get("examples", {}).items()},
     }
 
@@ -273,8 +293,6 @@ def main(argv: list[str] | None = None) -> int:
                         help=f"CommonMark spec version (default: {DEFAULT_VERSION})")
     parser.add_argument("--force", action="store_true",
                         help="Re-download spec.txt even if cached")
-    parser.add_argument("--skip-list", type=Path, default=DEFAULT_SKIP_LIST,
-                        help="Path to skip-list JSON")
     parser.add_argument("--keep-existing", action="store_true",
                         help="Don't delete existing tests/commonmark/*.os before generating")
     args = parser.parse_args(argv)
@@ -292,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(f"[dump]    {json_path.relative_to(PROJECT_ROOT)}")
 
-    skip_list = load_skip_list(args.version, args.skip_list)
+    skip_list = load_skip_list(args.version)
     if skip_list["sections"] or skip_list["examples"]:
         print(f"[skip]    sections={len(skip_list['sections'])}, "
               f"examples={len(skip_list['examples'])}")

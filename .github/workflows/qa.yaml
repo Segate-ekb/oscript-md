@@ -1,0 +1,15 @@
+name: Контроль качества
+
+# Временно отключён: пока нет доступа к SonarCloud / coveralls для этого репозитория.
+# Чтобы включить — вернуть push / pull_request в блок on: ниже и завести
+# секреты SONAR_TOKEN / COVERALLS_REPO_TOKEN в настройках репозитория.
+on:
+  workflow_dispatch:
+
+jobs:
+  sonar:
+    uses: autumn-library/workflows/.github/workflows/sonar.yml@main
+    with:
+      github_repository: segate-ekb/oscript-md
+      coveralls: true
+      sonarqube: false
