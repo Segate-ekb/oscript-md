@@ -81,20 +81,57 @@ python tools/sync-commonmark.py 0.31.2
 
 ## Архитектура
 
-- [src/ast/](src/ast/) — узлы AST (Документ, Заголовок, Параграф, Текст, ГоризонтальнаяЛиния, …)
-- [src/parsing/](src/parsing/) — контекст парсинга, читатель строк, позиция
-- [src/parsing/block/](src/parsing/block/) — блочные парсеры (по классу на синтаксис)
-- [src/parsing/inline/](src/parsing/inline/) — inline-парсеры
-- [src/rendering/](src/rendering/) — рендереры HTML/JSON/text
-- [src/MarkdownРеестрКомпонентов.os](src/MarkdownРеестрКомпонентов.os) — реестр под расширения
-- [src/MarkdownНастройки.os](src/MarkdownНастройки.os) — пресеты (commonmark / github-like / documentation / …)
+Библиотека следует стандартному соглашению OneScript об автообнаружении классов и
+модулей по каталогам `Классы/` и `Модули/`. `lib.config` и кастомный
+`package-loader.os` не используются. Семантическая группировка по
+подпапкам (`ast/`, `rendering/`, `extensions/`, `internal/*`) сохранена за счёт
+того, что каждая подпапка — самостоятельная мини-библиотека со своей парой
+`Классы/` / `Модули/`, подключаемая через `#Использовать` из файлов, кому
+нужны её сущности. Фасад [src/Модули/Markdown.os](src/Модули/Markdown.os)
+подключает все подпапки сразу — поэтому после `#Использовать "oscript-md"`
+весь набор классов готов к использованию.
+
+### Публичный слой (доступен пользователю библиотеки)
+
+- [src/Модули/Markdown.os](src/Модули/Markdown.os) — фасад. Основная точка входа: `Markdown.ВHTML`, `Markdown.Разобрать`, `Markdown.ВJSON`, `Markdown.ВТекст`, пресеты настроек.
+- [src/Классы/MarkdownПарсер.os](src/Классы/MarkdownПарсер.os) — основной парсер (можно создавать напрямую для тонкой настройки).
+- [src/Классы/MarkdownНастройки.os](src/Классы/MarkdownНастройки.os) — пресеты (commonmark / github-like / documentation / …).
+- [src/Классы/MarkdownНаборРасширений.os](src/Классы/MarkdownНаборРасширений.os) — управление включёнными расширениями.
+- [src/Классы/MarkdownРеестрКомпонентов.os](src/Классы/MarkdownРеестрКомпонентов.os) — реестр компонентов для пользовательских расширений.
+- [src/ast/Классы/](src/ast/Классы/) — AST-узлы (`MarkdownДокумент`, `MarkdownЗаголовок`, `MarkdownПараграф`, `MarkdownПозицияВИсходнике`, …, включая GFM-узлы).
+- [src/rendering/Классы/](src/rendering/Классы/) — рендереры HTML / JSON / Text.
+- [src/extensions/Классы/](src/extensions/Классы/) — публичные классы расширений (tables, tasklists, strikethrough, autolinks). Подключаются через `MarkdownНаборРасширений.Включить(...)`.
+
+### Internal-слой (детали реализации, для пользователя скрыты)
+
+- [src/internal/parsing/Классы/](src/internal/parsing/Классы/) — контекст парсинга, читатель строк, inline-парсер.
+- [src/internal/block/Классы/](src/internal/block/Классы/) — блочные парсеры по типам синтаксиса CommonMark (ATX, fenced/indented code, цитаты, списки, link reference definitions, параграфы, …).
+- [src/internal/extensions/Классы/](src/internal/extensions/Классы/) — реализационные парсеры расширений (`MarkdownПарсерТаблиц`, `MarkdownПостпроцессорСпискаЗадач`).
+- [src/internal/inline/Модули/](src/internal/inline/Модули/) — служебные модули. `MarkdownHTMLСущности` (lazy-кеш HTML-сущностей) + `html-entities.json`.
+
+Internal-классы не подхватываются стандартным загрузчиком — их `Классы/` / `Модули/` лежат вне сканируемых путей. Они подключаются явно через `#Использовать` из тех файлов, кому нужны конкретные сущности (фасад тянет все, парсер — только нужные ему группы). Для рядового пользователя `#Использовать "oscript-md"` достаточно: фасад уже сам инициализирует внутреннюю инфраструктуру.
+
+Тесты unit-уровня, которым нужен прямой доступ к internal (изолированный тест блочного парсера или контекста), подключают конкретные подпапки, например `#Использовать "../../src/internal/block"`. Тесты через публичный фасад этого не делают.
 
 Полное ТЗ — в [paln.md](paln.md).
 
 ## Структура каталогов
 
 ```
-src/                                  — библиотека
+src/
+  Классы/                             — публичные core-классы (Парсер, Настройки,
+                                         НаборРасширений, РеестрКомпонентов)
+  Модули/                             — публичные модули (фасад Markdown)
+  ast/Классы/                         — AST: документ, заголовки, параграфы, списки,
+                                         GFM-узлы, позиция в исходнике
+  rendering/Классы/                   — рендереры HTML / JSON / Text
+  extensions/Классы/                  — публичные классы расширений (Tables, TaskLists,
+                                         Strikethrough, AutoLinks)
+  internal/
+    parsing/Классы/                   — контекст, читатель строк, inline-парсер
+    block/Классы/                     — блочные парсеры по типам синтаксиса
+    extensions/Классы/                — реализация tables / tasklists
+    inline/Модули/                    — MarkdownHTMLСущности + html-entities.json
 tests/
   unit/                               — юнит-тесты (вручную)
   commonmark/<section>.os             — CommonMark conformance (генерируется)

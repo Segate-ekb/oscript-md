@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Генерирует src/parsing/inline/html-entities.json — таблицу именованных
+"""Генерирует src/internal/inline/Модули/html-entities.json — таблицу именованных
 HTML-сущностей для MarkdownInlineПарсер.ПопробоватьСущность.
 
 Источник данных — модуль `html.entities` стандартной библиотеки Python
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-OUT_PATH = PROJECT_ROOT / "src" / "parsing" / "inline" / "html-entities.json"
+OUT_PATH = PROJECT_ROOT / "src" / "internal" / "inline" / "Модули" / "html-entities.json"
 
 
 def main() -> int:
