@@ -1,0 +1,21 @@
+*.ospx
+*.log
+bin/
+obj/
+.idea/
+.vs/
+.vscode/
+*.suo
+*.user
+out/
+node_modules/
+
+# Build / отчёты тестирования
+build/
+
+# Кеш скачанных CommonMark spec-ов (генератор регенерирует при необходимости)
+tests/commonmark/.cache/
+
+# Python
+__pycache__/
+*.pyc

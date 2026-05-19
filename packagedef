@@ -1,0 +1,10 @@
+Описание.Имя("oscript-md")
+	.Версия("0.1.0")
+	.Автор("Egor Ivanov")
+	.АдресАвтора("egor.ivanov@fingular.com")
+	.Описание("Markdown library in pure OneScript")
+	.ВключитьФайл("src", "*")
+	.ВключитьФайл("packagedef")
+	.ВключитьФайл("README.md")
+	.ЗависитОт("asserts")
+	.ЗависитОт("1testrunner");
