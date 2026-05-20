@@ -14,3 +14,14 @@ jobs:
     uses: autumn-library/workflows/.github/workflows/test.yml@v1
     with:
       oscript_version: ${{ matrix.oscript_version }}
+      # Reusable test.yml по умолчанию запускает `oscript ./tasks/test.os`
+      # (test_engine=1testrunner). Наш tasks/test.os вызывает `oneunit` как
+      # внешнюю команду — она недоступна, если oneunit поставлен в локальный
+      # oscript_modules (как делает workflow через `opm install -l --dev`).
+      # Переключаемся на встроенный движок workflow: он сам вызывает
+      # ./oscript_modules/bin/oneunit с нужными путями.
+      test_engine: oneunit
+      test_dir_paths: tests/unit,tests/commonmark
+      # CommonMark-сьют — 652 теста; tree-режим даёт мегабайты вывода и
+      # засоряет лог CI. summary компактнее и не теряет статус по упавшим.
+      test_log_mod: summary
