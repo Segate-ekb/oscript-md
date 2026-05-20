@@ -1,5 +1,16 @@
 name: Тестирование
 
+# Reusable autumn-library/workflows/test.yml ставит oneunit через `opm install -l oneunit`
+# (локальная установка). При этом транзитивные deps oneunit (annotations и др.)
+# не разворачиваются в `oscript_modules/oneunit/oscript_modules/`, и CLI падает с
+# «Библиотека не найдена: annotations». Поэтому workflow прописан вручную:
+# oneunit ставится глобально (`opm install oneunit`), а локальные dev-зависимости
+# пакета (asserts, 1commands) — отдельно через `opm install -l --dev`.
+#
+# oscript_version: 'default' (1.9.2 из packagedef) намеренно не используется —
+# oneunit 0.3.x требует engine >= 2.0.0-rc.7. 1.9.2 остаётся минимумом для
+# рантайма самого пакета, но dev-окружение нуждается в 2.0+.
+
 on:
   push:
   pull_request:
@@ -10,18 +21,38 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        oscript_version: ['default', 'stable', 'dev']
-    uses: autumn-library/workflows/.github/workflows/test.yml@v1
-    with:
-      oscript_version: ${{ matrix.oscript_version }}
-      # Reusable test.yml по умолчанию запускает `oscript ./tasks/test.os`
-      # (test_engine=1testrunner). Наш tasks/test.os вызывает `oneunit` как
-      # внешнюю команду — она недоступна, если oneunit поставлен в локальный
-      # oscript_modules (как делает workflow через `opm install -l --dev`).
-      # Переключаемся на встроенный движок workflow: он сам вызывает
-      # ./oscript_modules/bin/oneunit с нужными путями.
-      test_engine: oneunit
-      test_dir_paths: tests/unit,tests/commonmark
-      # CommonMark-сьют — 652 теста; tree-режим даёт мегабайты вывода и
-      # засоряет лог CI. summary компактнее и не теряет статус по упавшим.
-      test_log_mod: summary
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        oscript_version: [stable, dev]
+    runs-on: ${{ matrix.os }}
+    env:
+      LANG: ru_RU.UTF-8
+      LC_ALL: ru_RU.UTF-8
+
+    steps:
+      - name: Актуализация
+        uses: actions/checkout@v4
+
+      - name: Установка локали (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          powershell -Command "Set-WinSystemLocale -SystemLocale 'ru_RU'"
+          powershell -Command "Set-Culture 'ru_RU'"
+
+      - name: Установка OneScript
+        uses: otymko/setup-onescript@v1.5.1
+        with:
+          version: ${{ matrix.oscript_version }}
+
+      - name: Установка opm и oneunit (глобально)
+        shell: bash
+        run: |
+          opm install opm
+          opm install oneunit
+
+      - name: Установка dev-зависимостей пакета (локально)
+        shell: bash
+        run: opm install -l --dev
+
+      - name: Тестирование
+        shell: bash
+        run: oneunit e -d tests/unit,tests/commonmark --timeout 0 --mode summary
