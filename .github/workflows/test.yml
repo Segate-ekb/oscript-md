@@ -29,3 +29,4 @@ jobs:
       test_log_mod: summary
       test_dir_paths: tests
       oscript_version: default
+      os_versions: ${{ matrix.os }}
