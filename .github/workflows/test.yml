@@ -18,41 +18,15 @@ on:
 
 jobs:
   test:
+    
+
+jobs:
+  test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         oscript_version: [stable, dev]
-    runs-on: ${{ matrix.os }}
-    env:
-      LANG: ru_RU.UTF-8
-      LC_ALL: ru_RU.UTF-8
-
-    steps:
-      - name: Актуализация
-        uses: actions/checkout@v4
-
-      - name: Установка локали (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          powershell -Command "Set-WinSystemLocale -SystemLocale 'ru_RU'"
-          powershell -Command "Set-Culture 'ru_RU'"
-
-      - name: Установка OneScript
-        uses: otymko/setup-onescript@v1.5.1
-        with:
-          version: ${{ matrix.oscript_version }}
-
-      - name: Установка opm и oneunit (глобально)
-        shell: bash
-        run: |
-          opm install opm
-          opm install oneunit
-
-      - name: Установка dev-зависимостей пакета (локально)
-        shell: bash
-        run: opm install -l --dev
-
-      - name: Тестирование
-        shell: bash
-        run: oneunit e -d tests/unit,tests/commonmark --timeout 0 --mode summary
+    uses: autumn-library/workflows/.github/workflows/test.yml@main
+    with:
+      test_engine: oneunit
