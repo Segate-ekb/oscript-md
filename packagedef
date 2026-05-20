@@ -6,8 +6,15 @@
 // CommonMark + GFM-расширения (tables, tasklists, strikethrough, autolinks).
 // В рантайме не требует сторонних библиотек — реализация полностью
 // автономна. Зависимости ниже относятся только к процессу разработки
-// (запуск тестов, утверждения, обвязка над дочерними процессами в tasks/).
+// (утверждения в тестах, обвязка над дочерними процессами в tasks/).
 //
+// oneunit (test-runner) намеренно НЕ указан в РазработкаЗависитОт:
+// reusable workflow autumn-library/workflows ставит его отдельным шагом
+// `opm install -l oneunit`. Если перечислить его и здесь, opm разворачивает
+// его транзитивные deps плоско в ./oscript_modules/, и второй вызов
+// reusable workflow ломает структуру `oneunit/oscript_modules/annotations`,
+// после чего CLI oneunit падает с «Библиотека не найдена: annotations».
+// Для локальной разработки oneunit ставится отдельно: `opm install oneunit`.
 
 Описание.Имя("oscript-md")
 		.Версия("0.1.0")
@@ -17,7 +24,6 @@
 		.АдресРепозитория("https://github.com/segate-ekb/oscript-md")
 		.Описание("Markdown-парсер и рендерер на чистом OneScript: CommonMark и GFM-расширения.")
 
-		.РазработкаЗависитОт("oneunit",   "0.3.3")
 		.РазработкаЗависитОт("asserts",   "1.6.1")
 		.РазработкаЗависитОт("1commands", "1.5.0")
 
