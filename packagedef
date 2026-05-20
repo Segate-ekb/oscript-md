@@ -18,7 +18,7 @@
 
 Описание.Имя("oscript-md")
 		.Версия("0.1.0")
-		.ВерсияСреды("1.9.2")
+		.ВерсияСреды("2.0.0")
 		.Автор("Egor Ivanov")
 		.АдресАвтора("Segate@inbox.ru")
 		.АдресРепозитория("https://github.com/segate-ekb/oscript-md")

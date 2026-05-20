@@ -18,11 +18,12 @@ on:
 
 jobs:
   test:
+    uses: autumn-library/workflows/.github/workflows/test.yml@main
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        oscript_version: [stable, dev]
-    uses: autumn-library/workflows/.github/workflows/test.yml@main
+        oscript_version: [stable, default]
     with:
       test_engine: oneunit
+      oscript_version: ${{ matrix.oscript_version }}
