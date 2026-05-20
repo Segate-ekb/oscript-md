@@ -23,8 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        oscript_version: [default]
     with:
       test_engine: oneunit
       test_recursive: true
-      oscript_version: ${{ matrix.oscript_version }}
+      test_log_mod: summary
+      test_dir_paths: tests
+      oscript_version: default
