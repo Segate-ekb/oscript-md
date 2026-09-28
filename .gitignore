@@ -10,6 +10,11 @@ obj/
 out/
 node_modules/
 
+# Движок подсветки кода в git не хранится: его собирают `npm ci && npm run build`
+# в tools/highlight — при opm build, в tasks/test*.os и в джобе CI
+src/highlight/shiki-bsl.mjs
+src/highlight/shiki-bsl.LICENSE.txt
+
 # Build / отчёты тестирования
 build/
 

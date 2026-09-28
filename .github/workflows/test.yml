@@ -1,15 +1,14 @@
 name: Тестирование
 
-# Reusable autumn-library/workflows/test.yml ставит oneunit через `opm install -l oneunit`
-# (локальная установка). При этом транзитивные deps oneunit (annotations и др.)
-# не разворачиваются в `oscript_modules/oneunit/oscript_modules/`, и CLI падает с
-# «Библиотека не найдена: annotations». Поэтому workflow прописан вручную:
-# oneunit ставится глобально (`opm install oneunit`), а локальные dev-зависимости
-# пакета (asserts, 1commands) — отдельно через `opm install -l --dev`.
-#
-# oscript_version: 'default' (1.9.2 из packagedef) намеренно не используется —
-# oneunit 0.3.x требует engine >= 2.0.0-rc.7. 1.9.2 остаётся минимумом для
-# рантайма самого пакета, но dev-окружение нуждается в 2.0+.
+# Юнит- и CommonMark-тесты гоняет общий workflow autumn-library/workflows на ubuntu,
+# windows и macos. Он ставит OneScript той версии, что в ВерсияСреды packagedef (2.0.0),
+# dev-зависимости пакета (`opm install -l --dev`) и oneunit отдельным шагом
+# (`opm install -l oneunit`, поэтому oneunit нет в РазработкаЗависитОт), а с build_package
+# делает `opm build .` до тестов. Хук ПередСборкой в packagedef собирает при этом движок
+# подсветки кода (`npm ci && npm run build` в tools/highlight), и тесты видят его так же,
+# как в установленном пакете. node 20+ с npm стоит на раннерах GitHub всех трёх систем,
+# а переменная CI там задана, поэтому тесты подсветки не пропускаются, а краснеют,
+# если движка или node нет.
 
 on:
   push:
@@ -27,3 +26,25 @@ jobs:
       test_log_mod: summary
       test_dir_paths: tests
       oscript_version: default
+      build_package: true
+
+  highlight:
+    name: Подсветка кода
+    # Тесты движка в node: две сборки из одного package-lock дают одни и те же байты, движок
+    # размечает BSL, скрипт раскрашивает только блоки BSL внутри data-md-highlight, а лист
+    # по умолчанию даёт каждой переменной темы светлый цвет и пару light-dark. Node — тот,
+    # что стоит на раннере: нужен 20+ (флаг регулярных выражений v у движка, node:test
+    # у тестов).
+    runs-on: ubuntu-latest
+    steps:
+      - name: Актуализация
+        uses: actions/checkout@v7.0.1
+
+      - name: Зависимости по package-lock
+        working-directory: tools/highlight
+        run: npm ci
+
+      # scripts.test в package.json — `npm run build && node --test`: движок собирается до тестов
+      - name: Сборка движка и тесты
+        working-directory: tools/highlight
+        run: npm test
