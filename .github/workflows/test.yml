@@ -9,6 +9,10 @@ name: Тестирование
 # как в установленном пакете. node 20+ с npm стоит на раннерах GitHub всех трёх систем,
 # а переменная CI там задана, поэтому тесты подсветки не пропускаются, а краснеют,
 # если движка или node нет.
+#
+# oneunit закреплён на 0.5.1 — последней версии, которая ставится на OneScript 2.0.0:
+# 0.5.2 требует 2.2.0, и без закрепления шаг установки oneunit падает. Зависимости пакета
+# из ./oscript_modules oneunit находит по oscript.cfg в корне репозитория.
 
 on:
   push:
@@ -26,6 +30,7 @@ jobs:
       test_log_mod: summary
       test_dir_paths: tests
       oscript_version: default
+      oneunit_version: 0.5.1
       build_package: true
 
   highlight:

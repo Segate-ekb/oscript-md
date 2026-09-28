@@ -475,6 +475,8 @@ container-модели (CM §4.7) и относятся к одной из тр�
 `tasks/*.os` дёргают `oneunit` как CLI, поэтому он должен быть в `PATH` —
 ставим его глобально. `asserts` и `1commands` подтянутся как локальные
 dev-зависимости из `packagedef`, `html-sanitizer` — как обычная зависимость.
+Из `./oscript_modules` их берёт oneunit, запущенный из корня репозитория: туда
+указывает `oscript.cfg` в корне (`lib.additional=./oscript_modules`).
 
 ```bash
 opm install oneunit                     # test-runner глобально (нужен в PATH)
