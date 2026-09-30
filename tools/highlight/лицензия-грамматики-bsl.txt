@@ -1,6 +1,6 @@
 1c-syntax/vsc-language-1c-bsl — MIT
 Грамматики BSL и языка запросов 1С (sdbl): https://github.com/1c-syntax/vsc-language-1c-bsl.
-В движок они вошли в составе @shikijs/langs-precompiled, у которого своего текста этой
+В скрипт подсветки они вошли в составе @shikijs/langs, у которого своего текста этой
 лицензии нет, поэтому он приведён здесь.
 
 The MIT License (MIT)

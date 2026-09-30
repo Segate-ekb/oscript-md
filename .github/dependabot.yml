@@ -1,22 +1,11 @@
-# Обновления зависимостей. Движок подсветки кода собирается из tools/highlight по
-# package-lock.json, поэтому новая версия shiki приходит сюда PR, а CI этого PR собирает
-# с ней движок на всех системах и гоняет все тесты — это и есть проверка обновления.
+# Новая версия shiki приходит PR в tools/highlight, и CI этого PR собирает с ней скрипт
+# подсветки кода и гоняет тесты.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /tools/highlight
     schedule:
       interval: weekly
-    groups:
-      # пакеты shiki связаны друг с другом и поднимаются только вместе
-      shiki:
-        patterns:
-          - "@shikijs/*"
-      build-and-test-tools:
-        patterns:
-          - esbuild
-          - linkedom
-          - postcss
 
   - package-ecosystem: github-actions
     directory: /

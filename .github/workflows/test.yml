@@ -1,18 +1,12 @@
 name: Тестирование
 
 # Юнит- и CommonMark-тесты гоняет общий workflow autumn-library/workflows на ubuntu,
-# windows и macos. Он ставит OneScript той версии, что в ВерсияСреды packagedef (2.0.0),
-# dev-зависимости пакета (`opm install -l --dev`) и oneunit отдельным шагом
-# (`opm install -l oneunit`, поэтому oneunit нет в РазработкаЗависитОт), а с build_package
-# делает `opm build .` до тестов. Хук ПередСборкой в packagedef собирает при этом движок
-# подсветки кода (`npm ci && npm run build` в tools/highlight), и тесты видят его так же,
-# как в установленном пакете. node 20+ с npm стоит на раннерах GitHub всех трёх систем,
-# а переменная CI там задана, поэтому тесты подсветки не пропускаются, а краснеют,
-# если движка или node нет.
+# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0). С build_package он
+# делает `opm build .`, и хук ПередСборкой в packagedef собирает скрипт подсветки кода.
 #
 # oneunit закреплён на 0.5.1 — последней версии, которая ставится на OneScript 2.0.0:
-# 0.5.2 требует 2.2.0, и без закрепления шаг установки oneunit падает. Зависимости пакета
-# из ./oscript_modules oneunit находит по oscript.cfg в корне репозитория.
+# 0.5.2 требует 2.2.0. Зависимости пакета из ./oscript_modules oneunit находит
+# по oscript.cfg в корне репозитория.
 
 on:
   push:
@@ -35,11 +29,6 @@ jobs:
 
   highlight:
     name: Подсветка кода
-    # Тесты движка в node: две сборки из одного package-lock дают одни и те же байты, движок
-    # размечает BSL, скрипт раскрашивает только блоки BSL внутри data-md-highlight, а лист
-    # по умолчанию даёт каждой переменной темы светлый цвет и пару light-dark. Node — тот,
-    # что стоит на раннере: нужен 20+ (флаг регулярных выражений v у движка, node:test
-    # у тестов).
     runs-on: ubuntu-latest
     steps:
       - name: Актуализация
@@ -49,7 +38,7 @@ jobs:
         working-directory: tools/highlight
         run: npm ci
 
-      # scripts.test в package.json — `npm run build && node --test`: движок собирается до тестов
-      - name: Сборка движка и тесты
+      # npm test собирает скрипт и проверяет, что он раскрашивает блоки bsl на странице
+      - name: Сборка скрипта и тесты
         working-directory: tools/highlight
         run: npm test
