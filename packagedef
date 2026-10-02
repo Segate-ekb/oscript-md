@@ -27,7 +27,7 @@
 		.Автор("Egor Ivanov")
 		.АдресАвтора("Segate@inbox.ru")
 		.АдресРепозитория("https://github.com/segate-ekb/oscript-md")
-		.Описание("Markdown-парсер и рендерер на чистом OneScript: CommonMark, GFM-расширения и безопасный рендер недоверенного Markdown. Отдаёт тег подсветки кода BSL и языка запросов на shiki для браузера.")
+		.Описание("Markdown-парсер и рендерер на чистом OneScript: CommonMark, GFM-расширения и безопасный рендер недоверенного Markdown.")
 
 		.ЗависитОт("html-sanitizer", "0.2.0")
 		.РазработкаЗависитОт("html-sanitizer", "0.2.0")
