@@ -10,9 +10,6 @@ obj/
 out/
 node_modules/
 
-# Скрипт подсветки кода собирает `npm run build` в tools/highlight (его зовёт opm build)
-src/highlight/
-
 # Build / отчёты тестирования
 build/
 

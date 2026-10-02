@@ -1,10 +1,9 @@
-// Прогон всех тестов (unit + CommonMark conformance + скрипт подсветки кода).
+// Прогон всех тестов (unit + CommonMark conformance).
 //
 // Используется как единая точка входа для CI / локального запуска:
 //   oscript tasks/test.os
 //
-// Внутри запускает tasks/test_unit.os, tasks/test_commonmark.os и tasks/test_highlight.os
-// последовательно.
+// Внутри запускает tasks/test_unit.os и tasks/test_commonmark.os последовательно.
 // Возврат: !=0 если хотя бы один шаг упал. Падающий шаг прерывает дальнейшие,
 // потому что нет смысла гонять CommonMark если базовые юнит-тесты не зелёные.
 
@@ -13,7 +12,6 @@
 Шаги = Новый Массив;
 Шаги.Добавить("tasks/test_unit.os");
 Шаги.Добавить("tasks/test_commonmark.os");
-Шаги.Добавить("tasks/test_highlight.os");
 
 ИтоговыйКод = 0;
 Для Каждого Шаг Из Шаги Цикл

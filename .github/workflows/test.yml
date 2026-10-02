@@ -1,8 +1,7 @@
 name: Тестирование
 
 # Юнит- и CommonMark-тесты гоняет общий workflow autumn-library/workflows на ubuntu,
-# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0). С build_package он
-# делает `opm build .`, и хук ПередСборкой в packagedef собирает скрипт подсветки кода.
+# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0).
 #
 # oneunit закреплён на 0.5.1 — последней версии, которая ставится на OneScript 2.0.0:
 # 0.5.2 требует 2.2.0. Зависимости пакета из ./oscript_modules oneunit находит
@@ -25,20 +24,3 @@ jobs:
       test_dir_paths: tests
       oscript_version: default
       oneunit_version: 0.5.1
-      build_package: true
-
-  highlight:
-    name: Подсветка кода
-    runs-on: ubuntu-latest
-    steps:
-      - name: Актуализация
-        uses: actions/checkout@v7.0.1
-
-      - name: Зависимости по package-lock
-        working-directory: tools/highlight
-        run: npm ci
-
-      # npm test собирает скрипт и проверяет, что он раскрашивает блоки bsl на странице
-      - name: Сборка скрипта и тесты
-        working-directory: tools/highlight
-        run: npm test

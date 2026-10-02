@@ -29,9 +29,6 @@ opm install --local
 opm build .
 ```
 
-`opm build .` собирает и скрипт подсветки кода (см. [«Подсветка кода BSL в браузере»](#подсветка-кода-bsl-в-браузере)):
-для этого нужен node с npm в `PATH`.
-
 После установки библиотека доступна в любом скрипте через стандартное:
 
 ```bsl
@@ -254,33 +251,23 @@ strikethrough / autolinks).
 
 ## Подсветка кода BSL в браузере
 
-Рендер печатает блок ` ```bsl ` (и ` ```1c `) как `<pre><code class="language-bsl">…</code></pre>`,
-и `Markdown.ВБезопасныйHTML` этот класс сохраняет. Раскрашивает такие блоки в браузере скрипт,
-который пакет везёт с собой: [shiki](https://shiki.style) с грамматикой BSL и темой github-light,
-собранный в один файл. Путь к нему внутри пакета отдаёт `MarkdownПодсветка.ФайлСкрипта()`:
-сервер раздаёт этот файл как статику, а страница подключает его модулем.
+Рендер печатает блок ` ```bsl ` как `<pre><code class="language-bsl">…</code></pre>`,
+и `Markdown.ВБезопасныйHTML` этот класс сохраняет. Раскрашивает такие блоки в браузере
+[shiki](https://shiki.style), а тег, который подключает его к странице, отдаёт
+`MarkdownПодсветка.ТегСкрипта()`:
 
 ```bsl
 #Использовать oscript-md
 
-// файл, который сервер отдаёт по адресу /static/oscript-md-highlight.js
-ФайлСкрипта = MarkdownПодсветка.ФайлСкрипта();
+Страница = Markdown.ВБезопасныйHTML(ТекстREADME) + MarkdownПодсветка.ТегСкрипта();
 ```
 
-```html
-<script type="module" src="/static/oscript-md-highlight.js"></script>
-```
-
-Скрипт заменяет каждый `pre > code.language-bsl` и `pre > code.language-1c` на странице
-разметкой shiki с цветами темы; блоки других языков он не трогает.
-
-Скрипт в git не хранится: его собирает `opm build` — хук `ПередСборкой` в `packagedef`
-запускает `npm ci && npm run build` в `tools/highlight` (одна команда esbuild), и shiki
-берётся той версии, что закреплена в `package-lock.json`. Поэтому для сборки пакета нужен
-node с npm. В клоне репозитория скрипт появляется после `opm build .`, `oscript tasks/test.os`
-или `npm ci && npm run build` в `tools/highlight`. shiki и грамматика BSL из
-[vsc-language-1c-bsl](https://github.com/1c-syntax/vsc-language-1c-bsl) распространяются
-по лицензии MIT.
+Тег — `<script type="module">`: он загружает shiki с [esm.sh](https://esm.sh), как
+в [документации shiki](https://shiki.style/guide/install#cdn-usage), и заменяет блоки
+` ```bsl ` и ` ```1c ` (код 1С), ` ```sdbl ` и ` ```1c-query ` (язык запросов) разметкой
+shiki с цветами темы github-light. Запрос в строке кода 1С раскрашивается тоже, блоки
+других языков тег не трогает. Без доступа к esm.sh — в закрытой сети или под
+Content-Security-Policy, которая этот адрес не разрешает, — код остаётся обычным текстом.
 
 ## Реализованные возможности
 
@@ -344,7 +331,7 @@ node с npm. В клоне репозитория скрипт появляет�
 | URL %-encoding по CommonMark | ✅ |
 | Санитизация недоверенного вывода | ✅ | `Markdown.ВБезопасныйHTML` поверх html-sanitizer |
 | Санитайзер опасных URL (`javascript:` и т. п.) | ✅ | Allowlist схем в html-sanitizer; сам рендерер по-прежнему только %-encoding |
-| Подсветка кода BSL в браузере | ✅ | Скрипт на shiki в пакете, путь — `MarkdownПодсветка.ФайлСкрипта()`, см. [раздел](#подсветка-кода-bsl-в-браузере) |
+| Подсветка кода BSL в браузере | ✅ | shiki с CDN, тег — `MarkdownПодсветка.ТегСкрипта()`, см. [раздел](#подсветка-кода-bsl-в-браузере) |
 | Heading id / якоря | ⏳ | Пресет `documentation` зарезервирован |
 | Frontmatter (YAML/TOML) | ⏳ | Пресет `documentation` зарезервирован |
 | TOC | ⏳ | Пресет `documentation` зарезервирован |
@@ -403,7 +390,6 @@ opm install --local --dev               # asserts, 1commands, html-sanitizer →
 oscript tasks/test.os                   # все тесты + JUnit-отчёты в build/reports/
 oscript tasks/test_unit.os              # только юнит-тесты
 oscript tasks/test_commonmark.os        # только CommonMark conformance
-oscript tasks/test_highlight.os         # сборка и тест скрипта подсветки кода (нужен node с npm)
 ```
 
 CommonMark-сьюты автогенерируются из официальной спецификации. Список
