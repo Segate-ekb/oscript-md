@@ -32,13 +32,13 @@ opm build .
 После установки библиотека доступна в любом скрипте через стандартное:
 
 ```bsl
-#Использовать "oscript-md"
+#Использовать oscript-md
 ```
 
 ## Быстрый старт
 
 ```bsl
-#Использовать "oscript-md"
+#Использовать oscript-md
 
 HTML = Markdown.ВHTML("# Привет, мир!");
 // → "<h1>Привет, мир!</h1>" + Символы.ПС
@@ -59,7 +59,7 @@ HTML = Markdown.ВHTML("# Привет, мир!");
 ### HTML-рендеринг
 
 ```bsl
-#Использовать "oscript-md"
+#Использовать oscript-md
 
 Исходник =
     "# Заголовок"   + Символы.ПС +
@@ -211,7 +211,7 @@ README чужого пакета, комментарий, поле формы �
 oscript-md не пишет. Фасад лишь склеивает рендер и очистку:
 
 ```bsl
-#Использовать "oscript-md"
+#Использовать oscript-md
 
 HTML = Markdown.ВБезопасныйHTML(ТекстREADME);       // рендер + очистка
 HTML = Markdown.ОчиститьHTML(НедоверенныйHTML);      // очистка готового HTML
@@ -248,6 +248,30 @@ HTML = Markdown.ВБезопасныйHTML(Текст, Markdown.Настройк
 метод `Зарегистрировать(Реестр)`. Полная схема — в исходниках расширений
 [src/extensions/Классы/](src/extensions/Классы/) (tables / tasklists /
 strikethrough / autolinks).
+
+## Подсветка кода BSL в браузере
+
+Рендер печатает блок ` ```bsl ` как `<pre><code class="language-bsl">…</code></pre>`,
+и `Markdown.ВБезопасныйHTML` этот класс сохраняет. Раскрашивает такие блоки в браузере
+[shiki](https://shiki.style), а тег, который подключает его к странице, отдаёт
+`MarkdownПодсветка.ТегСкрипта()`:
+
+```bsl
+#Использовать oscript-md
+
+Страница = Markdown.ВБезопасныйHTML(ТекстREADME) + MarkdownПодсветка.ТегСкрипта();
+```
+
+Тег — `<script type="module">`: он загружает shiki с [esm.sh](https://esm.sh), как
+в [документации shiki](https://shiki.style/guide/install#cdn-usage), и заменяет блоки
+` ```bsl ` и ` ```1c ` (код 1С), ` ```sdbl ` и ` ```1c-query ` (язык запросов) разметкой
+shiki с цветами темы github-light. Запрос в строке кода 1С раскрашивается тоже, блоки
+других языков тег не трогает. Без доступа к esm.sh — в закрытой сети или под
+Content-Security-Policy, которая этот адрес не разрешает, — код остаётся обычным текстом.
+
+Версию shiki в адресе поднимает [Renovate](https://docs.renovatebot.com) по правилу
+из `renovate.json`. Каждое обновление проверяет тест `tests/browser` в CI: он открывает
+страницу с тегом в Chrome без окна и смотрит, что код раскрашен.
 
 ## Реализованные возможности
 
@@ -311,6 +335,7 @@ strikethrough / autolinks).
 | URL %-encoding по CommonMark | ✅ |
 | Санитизация недоверенного вывода | ✅ | `Markdown.ВБезопасныйHTML` поверх html-sanitizer |
 | Санитайзер опасных URL (`javascript:` и т. п.) | ✅ | Allowlist схем в html-sanitizer; сам рендерер по-прежнему только %-encoding |
+| Подсветка кода BSL в браузере | ✅ | shiki с CDN, тег — `MarkdownПодсветка.ТегСкрипта()`, см. [раздел](#подсветка-кода-bsl-в-браузере) |
 | Heading id / якоря | ⏳ | Пресет `documentation` зарезервирован |
 | Frontmatter (YAML/TOML) | ⏳ | Пресет `documentation` зарезервирован |
 | TOC | ⏳ | Пресет `documentation` зарезервирован |
@@ -360,14 +385,20 @@ container-модели (CM §4.7) и относятся к одной из тр�
 `tasks/*.os` дёргают `oneunit` как CLI, поэтому он должен быть в `PATH` —
 ставим его глобально. `asserts` и `1commands` подтянутся как локальные
 dev-зависимости из `packagedef`, `html-sanitizer` — как обычная зависимость.
+Из `./oscript_modules` их берёт oneunit, запущенный из корня репозитория: туда
+указывает `oscript.cfg` в корне (`lib.additional=./oscript_modules`).
 
 ```bash
 opm install oneunit                     # test-runner глобально (нужен в PATH)
 opm install --local --dev               # asserts, 1commands, html-sanitizer → ./oscript_modules
-oscript tasks/test.os                   # все тесты + JUnit-отчёты в build/reports/
+oscript tasks/test.os                   # юнит- и CommonMark-тесты + JUnit-отчёты в build/reports/
 oscript tasks/test_unit.os              # только юнит-тесты
 oscript tasks/test_commonmark.os        # только CommonMark conformance
+oneunit execute -d tests/browser        # подсветка кода в браузере
 ```
+
+Тест подсветки в браузере запускает Chrome без окна — `google-chrome` из `PATH` или путь
+из переменной `CHROME_BIN` — и ходит в esm.sh за shiki, поэтому в `tasks/test.os` не входит.
 
 CommonMark-сьюты автогенерируются из официальной спецификации. Список
 xfail-примеров хранится в самом скрипте (`SKIP_LIST` в начале файла):

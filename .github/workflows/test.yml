@@ -1,15 +1,13 @@
 name: Тестирование
 
-# Reusable autumn-library/workflows/test.yml ставит oneunit через `opm install -l oneunit`
-# (локальная установка). При этом транзитивные deps oneunit (annotations и др.)
-# не разворачиваются в `oscript_modules/oneunit/oscript_modules/`, и CLI падает с
-# «Библиотека не найдена: annotations». Поэтому workflow прописан вручную:
-# oneunit ставится глобально (`opm install oneunit`), а локальные dev-зависимости
-# пакета (asserts, 1commands) — отдельно через `opm install -l --dev`.
+# Юнит- и CommonMark-тесты гоняет общий workflow autumn-library/workflows на ubuntu,
+# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0). Подсветку кода в браузере
+# (tests/browser) проверяет отдельный джоб на ubuntu: там есть google-chrome, а тест ходит
+# в esm.sh за shiki — так CI проверяет и каждое обновление shiki от Renovate.
 #
-# oscript_version: 'default' (1.9.2 из packagedef) намеренно не используется —
-# oneunit 0.3.x требует engine >= 2.0.0-rc.7. 1.9.2 остаётся минимумом для
-# рантайма самого пакета, но dev-окружение нуждается в 2.0+.
+# oneunit закреплён на 0.5.1 — последней версии, которая ставится на OneScript 2.0.0:
+# 0.5.2 требует 2.2.0. Зависимости пакета из ./oscript_modules oneunit находит
+# по oscript.cfg в корне репозитория.
 
 on:
   push:
@@ -25,5 +23,17 @@ jobs:
       test_engine: oneunit
       test_recursive: true
       test_log_mod: summary
-      test_dir_paths: tests
+      test_dir_paths: tests/unit,tests/commonmark
       oscript_version: default
+      oneunit_version: 0.5.1
+
+  browser:
+    name: Подсветка в браузере
+    uses: autumn-library/workflows/.github/workflows/test.yml@main
+    with:
+      os_versions: '["ubuntu-latest"]'
+      test_engine: oneunit
+      test_log_mod: summary
+      test_dir_paths: tests/browser
+      oscript_version: default
+      oneunit_version: 0.5.1
