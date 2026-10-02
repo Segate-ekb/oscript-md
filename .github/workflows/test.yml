@@ -1,7 +1,9 @@
 name: Тестирование
 
 # Юнит- и CommonMark-тесты гоняет общий workflow autumn-library/workflows на ubuntu,
-# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0).
+# windows и macos на OneScript из ВерсияСреды packagedef (2.0.0). Подсветку кода в браузере
+# (tests/browser) проверяет отдельный джоб на ubuntu: там есть google-chrome, а тест ходит
+# в esm.sh за shiki — так CI проверяет и каждое обновление shiki от Renovate.
 #
 # oneunit закреплён на 0.5.1 — последней версии, которая ставится на OneScript 2.0.0:
 # 0.5.2 требует 2.2.0. Зависимости пакета из ./oscript_modules oneunit находит
@@ -21,6 +23,17 @@ jobs:
       test_engine: oneunit
       test_recursive: true
       test_log_mod: summary
-      test_dir_paths: tests
+      test_dir_paths: tests/unit,tests/commonmark
+      oscript_version: default
+      oneunit_version: 0.5.1
+
+  browser:
+    name: Подсветка в браузере
+    uses: autumn-library/workflows/.github/workflows/test.yml@main
+    with:
+      os_versions: '["ubuntu-latest"]'
+      test_engine: oneunit
+      test_log_mod: summary
+      test_dir_paths: tests/browser
       oscript_version: default
       oneunit_version: 0.5.1

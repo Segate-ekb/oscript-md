@@ -269,6 +269,10 @@ shiki с цветами темы github-light. Запрос в строке ко
 других языков тег не трогает. Без доступа к esm.sh — в закрытой сети или под
 Content-Security-Policy, которая этот адрес не разрешает, — код остаётся обычным текстом.
 
+Версию shiki в адресе поднимает [Renovate](https://docs.renovatebot.com) по правилу
+из `renovate.json`. Каждое обновление проверяет тест `tests/browser` в CI: он открывает
+страницу с тегом в Chrome без окна и смотрит, что код раскрашен.
+
 ## Реализованные возможности
 
 ### Блочный уровень (CommonMark)
@@ -387,10 +391,14 @@ dev-зависимости из `packagedef`, `html-sanitizer` — как обы
 ```bash
 opm install oneunit                     # test-runner глобально (нужен в PATH)
 opm install --local --dev               # asserts, 1commands, html-sanitizer → ./oscript_modules
-oscript tasks/test.os                   # все тесты + JUnit-отчёты в build/reports/
+oscript tasks/test.os                   # юнит- и CommonMark-тесты + JUnit-отчёты в build/reports/
 oscript tasks/test_unit.os              # только юнит-тесты
 oscript tasks/test_commonmark.os        # только CommonMark conformance
+oneunit execute -d tests/browser        # подсветка кода в браузере
 ```
+
+Тест подсветки в браузере запускает Chrome без окна — `google-chrome` из `PATH` или путь
+из переменной `CHROME_BIN` — и ходит в esm.sh за shiki, поэтому в `tasks/test.os` не входит.
 
 CommonMark-сьюты автогенерируются из официальной спецификации. Список
 xfail-примеров хранится в самом скрипте (`SKIP_LIST` в начале файла):
