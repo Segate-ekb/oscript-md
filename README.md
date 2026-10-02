@@ -272,16 +272,15 @@ strikethrough / autolinks).
 ```
 
 Скрипт заменяет каждый `pre > code.language-bsl` и `pre > code.language-1c` на странице
-разметкой shiki с цветами темы; блоки других языков он не трогает. Чужой Markdown не подвесит
-вкладку: строку от 200 символов shiki оставляет без цвета, а код сверх 25 000 символов
-на страницу остаётся текстом.
+разметкой shiki с цветами темы; блоки других языков он не трогает.
 
 Скрипт в git не хранится: его собирает `opm build` — хук `ПередСборкой` в `packagedef`
-запускает `npm ci && npm run build` в `tools/highlight`, и shiki берётся той версии, что
-закреплена в `package-lock.json`. Поэтому для сборки пакета нужен node с npm. В клоне
-репозитория скрипт появляется после `opm build .`, `oscript tasks/test.os` или
-`npm ci && npm run build` в `tools/highlight`. Лицензии shiki, его зависимостей и грамматики
-BSL (все — MIT) лежат в конце файла скрипта.
+запускает `npm ci && npm run build` в `tools/highlight` (одна команда esbuild), и shiki
+берётся той версии, что закреплена в `package-lock.json`. Поэтому для сборки пакета нужен
+node с npm. В клоне репозитория скрипт появляется после `opm build .`, `oscript tasks/test.os`
+или `npm ci && npm run build` в `tools/highlight`. shiki и грамматика BSL из
+[vsc-language-1c-bsl](https://github.com/1c-syntax/vsc-language-1c-bsl) распространяются
+по лицензии MIT.
 
 ## Реализованные возможности
 

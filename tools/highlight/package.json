@@ -4,7 +4,7 @@
   "description": "Скрипт подсветки кода BSL для oscript-md: shiki, собранный в один файл",
   "type": "module",
   "scripts": {
-    "build": "node собрать.js",
+    "build": "esbuild подсветка.js --bundle --minify --format=esm --outfile=../../src/highlight/oscript-md-highlight.js",
     "test": "npm run build && node --test"
   },
   "devDependencies": {
