@@ -22,7 +22,7 @@
     КонецЕсли;
 
     Возврат СтрШаблон("<script type=""module"">
-    |import { codeToHtml } from 'https://esm.sh/shiki@4.4.3';
+    |import { codeToHtml } from 'https://esm.sh/shiki@4.5.0';
     |for (const code of document.querySelectorAll('pre > code.language-bsl, pre > code.language-1c, pre > code.language-sdbl, pre > code.language-1c-query')) {
     |  const lang = code.className.replace('language-', '');
     |  code.parentElement.outerHTML = await codeToHtml(code.textContent,
