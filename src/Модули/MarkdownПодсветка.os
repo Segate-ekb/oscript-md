@@ -23,7 +23,7 @@
     КонецЕсли;
 
     Возврат СтрШаблон("<script type=""module"">
-    |import { codeToHtml, bundledLanguages } from 'https://esm.sh/shiki@4.4.3';
+    |import { codeToHtml, bundledLanguages } from 'https://esm.sh/shiki@4.5.0';
     |for (const code of document.querySelectorAll('pre > code[class^=""language-""]')) {
     |  const lang = code.className.slice('language-'.length).toLowerCase();
     |  if (!Object.hasOwn(bundledLanguages, lang)) continue;
