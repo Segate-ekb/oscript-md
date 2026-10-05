@@ -17,7 +17,7 @@ jobs:
       pool: default
       package: oscript-md
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: otymko/setup-onescript@v1.5.1
         with:
           version: stable
